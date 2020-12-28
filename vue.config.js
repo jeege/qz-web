@@ -38,15 +38,4 @@ module.exports = {
     configTsLoader(config.module.rule("ts"));
     configTsLoader(config.module.rule("tsx"));
   },
-  devServer: {
-    proxy: {
-      "/apiXj": {
-        target: "https://103.219.176.60/",
-        changeOrigin: true,
-        pathRewrite: {
-          "^/apiXj/": "",
-        },
-      },
-    },
-  },
 };
