@@ -1,4 +1,4 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
+/* eslint-disable @typescript-eslint/no-var-requires */
 const merge = require("webpack-merge").default;
 const tsImportPluginFactory = require("ts-import-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
@@ -76,7 +76,6 @@ module.exports = {
                 libraryDirectory: "es",
                 libraryName: "vant",
                 style: (name) => {
-                  console.log(name);
                   if (name === "vant/es/col") return `${name}/style`;
                   return `${name}/style/less`;
                 },
