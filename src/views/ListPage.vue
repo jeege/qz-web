@@ -15,14 +15,16 @@
         @click="itemClickHandle(vItem)"
       >
         <template v-slot:title>
-          <Image class="img-box" fit="cover" lazy-load :src="vItem.coverpic">
+          <!-- <Image class="img-box" fit="cover" lazy-load :src="vItem.coverpic"> -->
+          <Image class="img-box" fit="cover" lazy-load>
             <template v-slot:loading>
               <Loading type="spinner" size="20" />
             </template>
           </Image>
         </template>
         <div class="info">
-          <p>{{ vItem.title }}</p>
+          <!-- <p>{{ vItem.title }}</p> -->
+          <p>{{ "111" }}</p>
           <Row>
             <Col span="8" class="info-indicators"
               ><Icon name="star-o" />{{ vItem.scorenum }}
@@ -57,7 +59,7 @@
 </template>
 
 <script lang="ts">
-import { reactive, ref, defineComponent, watchEffect, computed } from "vue";
+import { reactive, ref, defineComponent, watch, computed } from "vue";
 import {
   DropdownMenu,
   DropdownItem,
@@ -74,6 +76,7 @@ import {
 import { getList, getVideoUrl } from "@/utils/api";
 import * as dto from "@/dto/searchDto";
 import { Vodrows } from "@/dto/list";
+import { useRoute, useRouter } from "vue-router";
 
 const { typeList, sortList, ...otherList } = dto;
 
@@ -86,6 +89,8 @@ interface ListPageState {
 export default defineComponent({
   setup() {
     const item = ref(null);
+    const route = useRoute();
+    const router = useRouter();
     const state: ListPageState = reactive({
       list: [],
       total: 0,
@@ -99,16 +104,47 @@ export default defineComponent({
         clarity: "0",
         size: "0",
         page: 1,
+        ...route.query,
       },
     });
-    const queryParams = computed(() => state.queryParams);
-    watchEffect(async () => {
-      const res = await getList({ ...queryParams.value });
-      state.list = res.data.vodrows;
-      state.total = res.data.pageinfo.total;
-      console.log(res.data.vodrows);
-      console.log(res.data.pageinfo);
+
+    const queryParams = computed(() => {
+      return state.queryParams;
     });
+
+    watch(
+      queryParams,
+      () => {
+        router.push({
+          path: "/list",
+          query: { ...queryParams.value },
+        });
+      },
+      {
+        immediate: true,
+        deep: true,
+      }
+    );
+    watch(
+      () => route.query,
+      () => {
+        getList({
+          ...queryParams.value,
+          ...route.query,
+        }).then((res) => {
+          state.list = res.data.vodrows;
+          state.total = res.data.pageinfo.total;
+        });
+      },
+      {
+        deep: true,
+      }
+    );
+
+    // watch([queryParams], () => {
+    //   console.log(queryParams.value);
+    // });
+
     return {
       item,
       state,
