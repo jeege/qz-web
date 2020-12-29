@@ -2,8 +2,8 @@
 const merge = require("webpack-merge").default;
 const tsImportPluginFactory = require("ts-import-plugin");
 const CompressionPlugin = require("compression-webpack-plugin");
-const isProduction = process.env.NODE_ENV === "production";
 const TerserPlugin = require("terser-webpack-plugin");
+const isProduction = process.env.NODE_ENV === "production";
 
 module.exports = {
   css: {
@@ -17,12 +17,12 @@ module.exports = {
       },
     },
   },
-  configureWebpack: config => {
+  configureWebpack: (config) => {
     if (isProduction) {
       config.plugins.push(
         new CompressionPlugin({
           test: /\.(js|css)$/,
-          algorithm: "gzip"
+          algorithm: "gzip",
         })
       );
       //压缩混淆
@@ -36,10 +36,10 @@ module.exports = {
             // https://github.com/terser/terser#minify-options
             terserOptions: {
               compress: {
-                drop_console: true
-              }
-            }
-          })
+                drop_console: true,
+              },
+            },
+          }),
         ],
         runtimeChunk: "single",
         // 分片，防止chunk过大
@@ -58,10 +58,10 @@ module.exports = {
                 )[1];
                 // npm package names are URL-safe, but some servers don't like @ symbols
                 return `npm.${packageName.replace("@", "")}`;
-              }
-            }
-          }
-        }
+              },
+            },
+          },
+        },
       };
     }
   },
@@ -69,26 +69,26 @@ module.exports = {
     // 按需加载vant组件
     const configTsLoader = (rule) => {
       rule.use("ts-loader").tap((options) => {
-        options = merge(options,  {
-            getCustomTransformers: () => ({
-              before: [
-                tsImportPluginFactory({
-                  libraryDirectory: "es",
-                  libraryName: "vant",
-                  style: (name) => {
-                    console.log(name)
-                    if (name === "vant/es/col") return `${name}/style`;
-                    return `${name}/style/less`;
-                  },
-                }),
-              ],
-            }),
-            compilerOptions: {
-              module: "es2015",
-            },
-          })  
-          return options
-      })
+        options = merge(options, {
+          getCustomTransformers: () => ({
+            before: [
+              tsImportPluginFactory({
+                libraryDirectory: "es",
+                libraryName: "vant",
+                style: (name) => {
+                  console.log(name);
+                  if (name === "vant/es/col") return `${name}/style`;
+                  return `${name}/style/less`;
+                },
+              }),
+            ],
+          }),
+          compilerOptions: {
+            module: "es2015",
+          },
+        });
+        return options;
+      });
     };
     configTsLoader(config.module.rule("ts"));
     configTsLoader(config.module.rule("tsx"));

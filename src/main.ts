@@ -3,5 +3,9 @@ import { Lazyload, Toast } from "vant";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
+import "vant/es/toast/style";
+import "vant/es/lazyload/style";
 
-createApp(App).use(Lazyload).use(Toast).use(store).use(router).mount("#app");
+const app = createApp(App);
+
+app.use(Lazyload).use(Toast).use(store).use(router).mount("#app");
