@@ -15,16 +15,14 @@
         @click="itemClickHandle(vItem)"
       >
         <template v-slot:title>
-          <!-- <Image class="img-box" fit="cover" lazy-load :src="vItem.coverpic"> -->
-          <Image class="img-box" fit="cover" lazy-load>
+          <Image class="img-box" fit="cover" lazy-load :src="vItem.coverpic">
             <template v-slot:loading>
               <Loading type="spinner" size="20" />
             </template>
           </Image>
         </template>
         <div class="info">
-          <!-- <p>{{ vItem.title }}</p> -->
-          <p>{{ "111" }}</p>
+          <p>{{ vItem.title }}</p>
           <Row>
             <Col span="8" class="info-indicators"
               ><Icon name="star-o" />{{ vItem.scorenum }}
@@ -39,7 +37,7 @@
         </div>
       </Cell>
     </List>
-    <div class="fix-bottom">
+    <div class="fix-bottom" v-if="state.list.length">
       <Pagination
         v-model="queryParams.page"
         force-ellipses
@@ -91,6 +89,7 @@ export default defineComponent({
     const item = ref(null);
     const route = useRoute();
     const router = useRouter();
+    const { page, ...defaultParams } = route.query;
     const state: ListPageState = reactive({
       list: [],
       total: 0,
@@ -103,14 +102,12 @@ export default defineComponent({
         lan: "0",
         clarity: "0",
         size: "0",
-        page: 1,
-        ...route.query,
+        ...defaultParams,
+        page: Number(page) || 1,
       },
     });
 
-    const queryParams = computed(() => {
-      return state.queryParams;
-    });
+    const queryParams = computed(() => state.queryParams);
 
     watch(
       queryParams,
@@ -121,7 +118,6 @@ export default defineComponent({
         });
       },
       {
-        immediate: true,
         deep: true,
       }
     );
@@ -129,8 +125,8 @@ export default defineComponent({
       () => route.query,
       () => {
         getList({
-          ...queryParams.value,
           ...route.query,
+          ...queryParams.value,
         }).then((res) => {
           state.list = res.data.vodrows;
           state.total = res.data.pageinfo.total;
@@ -138,6 +134,7 @@ export default defineComponent({
       },
       {
         deep: true,
+        immediate: true,
       }
     );
 

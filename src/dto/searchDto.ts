@@ -86,5 +86,5 @@ export interface SearchDto {
   lan?: string;
   clarity?: string;
   size?: string;
-  page: number;
+  page?: number;
 }

@@ -36,7 +36,7 @@
         </div>
       </Cell>
     </List>
-    <div class="fix-bottom">
+    <div class="fix-bottom" v-if="state.list.length">
       <Pagination
         v-model="queryParams.page"
         force-ellipses
@@ -56,7 +56,7 @@
 </template>
 
 <script lang="ts">
-import { reactive, ref, defineComponent, watchEffect, computed } from "vue";
+import { reactive, ref, defineComponent, computed, watch } from "vue";
 import {
   Search,
   List,
@@ -72,6 +72,7 @@ import {
 import { getVideoUrl, searchList } from "@/utils/api";
 import * as dto from "@/dto/searchDto";
 import { Vodrows } from "@/dto/searchList";
+import { useRoute, useRouter } from "vue-router";
 
 const { typeList, sortList, ...otherList } = dto;
 
@@ -87,22 +88,41 @@ interface SearchPageState {
 export default defineComponent({
   setup() {
     const item = ref(null);
+    const route = useRoute();
+    const router = useRouter();
+    const { page, keywords } = route.query;
     const state: SearchPageState = reactive({
       list: [],
       total: 0,
       queryParams: {
-        keywords: "",
-        page: 1,
+        keywords: String(keywords) || "",
+        page: Number(page) || 1,
       },
     });
     const queryParams = computed(() => state.queryParams);
-    watchEffect(async () => {
-      if (queryParams.value.keywords) {
-        const res = await searchList({ ...queryParams.value });
-        state.list = res.data.vodrows;
-        state.total = res.data.pageinfo.total;
+    watch(
+      queryParams,
+      () => {
+        router.push({
+          path: "/search",
+          query: { ...queryParams.value },
+        });
+      },
+      {
+        deep: true,
       }
-    });
+    );
+    watch(
+      () => route.query,
+      () => {
+        if (queryParams.value.keywords) {
+          searchList({ ...route.query, ...queryParams.value }).then((res) => {
+            state.list = res.data.vodrows;
+            state.total = res.data.pageinfo.total;
+          });
+        }
+      }
+    );
     return {
       item,
       state,
