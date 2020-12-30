@@ -1,10 +1,13 @@
 <template>
   <div class="about">
     <Sticky>
-      <Search
-        v-model="queryParams.keywords"
-        placeholder="请输入搜索关键词"
-      ></Search>
+      <form action="/">
+        <Search
+          v-model="queryParams.keywords"
+          placeholder="请输入搜索关键词"
+          @search="onSearch"
+        ></Search>
+      </form>
     </Sticky>
     <List>
       <Cell
@@ -14,14 +17,16 @@
         @click="itemClickHandle(vItem)"
       >
         <template v-slot:title>
-          <Image class="img-box" fit="cover" lazy-load :src="vItem.coverpic">
+          <!-- <Image class="img-box" fit="cover" lazy-load :src="vItem.coverpic"> -->
+          <Image class="img-box" fit="cover" lazy-load>
             <template v-slot:loading>
               <Loading type="spinner" size="20" />
             </template>
           </Image>
         </template>
         <div class="info">
-          <p>{{ vItem.title }}</p>
+          <!-- <p>{{ vItem.title }}</p> -->
+          <p>{{ 111 }}</p>
           <Row>
             <Col span="8" class="info-indicators"
               ><Icon name="star-o" />{{ vItem.scorenum }}
@@ -41,6 +46,7 @@
         v-model="queryParams.page"
         force-ellipses
         :total-items="state.total"
+        :items-per-page="16"
         :show-page-size="4"
       >
         <template #prev-text>
@@ -56,7 +62,14 @@
 </template>
 
 <script lang="ts">
-import { reactive, ref, defineComponent, computed, watch } from "vue";
+import {
+  reactive,
+  ref,
+  defineComponent,
+  computed,
+  watch,
+  onMounted,
+} from "vue";
 import {
   Search,
   List,
@@ -70,11 +83,8 @@ import {
   Pagination,
 } from "vant";
 import { getVideoUrl, searchList } from "@/utils/api";
-import * as dto from "@/dto/searchDto";
 import { Vodrows } from "@/dto/searchList";
 import { useRoute, useRouter } from "vue-router";
-
-const { typeList, sortList, ...otherList } = dto;
 
 interface SearchPageState {
   list: Vodrows[];
@@ -95,21 +105,24 @@ export default defineComponent({
       list: [],
       total: 0,
       queryParams: {
-        keywords: String(keywords) || "",
+        keywords: (keywords as string) || "",
         page: Number(page) || 1,
       },
     });
+    onMounted(() => {
+      console.log(route.query);
+    });
     const queryParams = computed(() => state.queryParams);
+    const onSearch = () => {
+      state.queryParams.page = 1;
+    };
     watch(
-      queryParams,
+      () => queryParams.value.page,
       () => {
         router.push({
           path: "/search",
           query: { ...queryParams.value },
         });
-      },
-      {
-        deep: true,
       }
     );
     watch(
@@ -121,15 +134,17 @@ export default defineComponent({
             state.total = res.data.pageinfo.total;
           });
         }
+      },
+      {
+        deep: true,
+        immediate: true,
       }
     );
     return {
       item,
       state,
       queryParams,
-      typeList,
-      sortList,
-      otherList,
+      onSearch,
     };
   },
   components: {

@@ -42,6 +42,7 @@
         v-model="queryParams.page"
         force-ellipses
         :total-items="state.total"
+        :items-per-page="16"
         :show-page-size="4"
       >
         <template #prev-text>
