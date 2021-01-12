@@ -17,16 +17,16 @@
         @click="itemClickHandle(vItem)"
       >
         <template v-slot:title>
-          <!-- <Image class="img-box" fit="cover" lazy-load :src="vItem.coverpic"> -->
-          <Image class="img-box" fit="cover" lazy-load>
+          <Image class="img-box" fit="cover" lazy-load :src="vItem.coverpic">
+            <!-- <Image class="img-box" fit="cover" lazy-load> -->
             <template v-slot:loading>
               <Loading type="spinner" size="20" />
             </template>
           </Image>
         </template>
         <div class="info">
-          <!-- <p>{{ vItem.title }}</p> -->
-          <p>{{ 111 }}</p>
+          <p>{{ vItem.title }}</p>
+          <!-- <p>{{ 111 }}</p> -->
           <Row>
             <Col span="8" class="info-indicators"
               ><Icon name="star-o" />{{ vItem.scorenum }}
@@ -115,14 +115,20 @@ export default defineComponent({
     const queryParams = computed(() => state.queryParams);
     const onSearch = () => {
       state.queryParams.page = 1;
+      router.push({
+        path: "/search",
+        query: { ...queryParams.value },
+      });
     };
     watch(
       () => queryParams.value.page,
       () => {
-        router.push({
-          path: "/search",
-          query: { ...queryParams.value },
-        });
+        if (queryParams.value.page !== 1) {
+          router.push({
+            path: "/search",
+            query: { ...queryParams.value },
+          });
+        }
       }
     );
     watch(
