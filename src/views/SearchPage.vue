@@ -81,6 +81,7 @@ import {
   Col,
   Icon,
   Pagination,
+  Toast,
 } from "vant";
 import { getVideoUrl, searchList } from "@/utils/api";
 import { Vodrows } from "@/dto/searchList";
@@ -170,7 +171,7 @@ export default defineComponent({
       const res = await getVideoUrl(item.vodid);
       const videoUrl = res.data.httpurl || res.data.httpurl_preview;
       if (!videoUrl) {
-        this.$toast("视频链接不存在，请浏览其他视频");
+        Toast("视频链接不存在，请浏览其他视频");
         return;
       }
       window.open(videoUrl);

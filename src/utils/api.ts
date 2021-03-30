@@ -3,6 +3,8 @@ import { SearchDto } from "@/dto/searchDto";
 import { XjList } from "@/dto/list";
 import { VideoDetail } from "@/dto/video";
 import { SearchList } from "@/dto/searchList";
+import { NovelRes } from "@/dto/novelList";
+import { Pagination } from "@/dto/pagination";
 
 // const apiUrl = 'https://103.219.176.60'
 
@@ -61,4 +63,25 @@ export const searchList = async ({
     },
   });
   return res.data;
+};
+
+export const getNovelList = async ({
+  pageSize = 20,
+  pageNo = 1,
+  orderBy = "a",
+  orderValue = "DESC",
+}: Pagination): Promise<NovelRes> => {
+  const res = await axios.get(`/apiNovel/novel/list`, {
+    params: {
+      pageSize,
+      pageNo,
+      orderBy,
+      orderValue,
+    },
+  });
+  if (res.data.code === 200) {
+    return res.data.data;
+  } else {
+    return Promise.reject(new Error("出错了"));
+  }
 };

@@ -11,7 +11,7 @@ module.exports = {
       less: {
         lessOptions: {
           modifyVars: {
-            hack: `true; @import "src/assets/theme.less";`,
+            hack: `true; @import "/src/assets/theme.less";`,
           },
         },
       },
@@ -99,6 +99,13 @@ module.exports = {
         changeOrigin: true,
         pathRewrite: {
           "^/apiXj/": "",
+        },
+      },
+      "/apiNovel": {
+        target: "http://localhost:3000/",
+        changeOrigin: true,
+        pathRewrite: {
+          "^/apiNovel/": "",
         },
       },
     },
