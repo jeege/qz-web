@@ -68,15 +68,15 @@ export const searchList = async ({
 export const getNovelList = async ({
   pageSize = 20,
   pageNo = 1,
-  orderBy = "a",
-  orderValue = "DESC",
-}: Pagination): Promise<NovelRes> => {
+  orderBy = "a_DESC",
+  keyword = "",
+}: Pagination & { keyword: string }): Promise<NovelRes> => {
   const res = await axios.get(`/apiNovel/novel/list`, {
     params: {
       pageSize,
       pageNo,
       orderBy,
-      orderValue,
+      keyword,
     },
   });
   if (res.data.code === 200) {

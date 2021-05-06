@@ -32,7 +32,6 @@ module.exports = {
           new TerserPlugin({
             test: /\.js(\?.*)?$/i,
             parallel: true,
-            cache: true,
             // https://github.com/terser/terser#minify-options
             terserOptions: {
               compress: {

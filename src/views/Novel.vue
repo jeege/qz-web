@@ -1,4 +1,13 @@
 <template>
+  <Sticky>
+    <form action="/">
+      <Search
+        v-model="state.queryParams.keyword"
+        placeholder="请输入搜索关键词"
+        @search="onSearch"
+      ></Search>
+    </form>
+  </Sticky>
   <List
     v-model:loading="state.loading"
     :finished="state.finished"
@@ -39,17 +48,16 @@
 
 <script lang="ts">
 import { reactive, defineComponent } from "vue";
-import { List, Cell, Toast, Button } from "vant";
+import { List, Cell, Toast, Button, Sticky, Search } from "vant";
 import { getNovelList } from "@/utils/api";
-import { Pagination } from "@/dto/pagination";
 import { NovelItem } from "@/dto/novelList";
 export default defineComponent({
   setup() {
-    const initQueryParams: Pagination = {
+    const initQueryParams = {
       pageNo: 1,
       pageSize: 20,
-      orderBy: "a",
-      orderValue: "DESC",
+      orderBy: "a_DESC",
+      keyword: "",
     };
     const initList: NovelItem[] = [];
     const state = reactive({
@@ -62,10 +70,10 @@ export default defineComponent({
       try {
         const res = await getNovelList(state.queryParams);
         state.loading = false;
-        if (res.itemCount) {
+        if (res.list.length) {
           state.list = [...state.list, ...res.list];
         }
-        if (res.totalPages === state.queryParams.pageNo) {
+        if (state.list.length === res.total) {
           state.finished = true;
         }
         if (state.queryParams.pageNo) {
@@ -75,12 +83,20 @@ export default defineComponent({
         Toast(error);
       }
     };
+
+    const onSearch = () => {
+      state.queryParams.pageNo = 1;
+      state.list = [];
+      state.finished = false;
+      onLoad();
+    };
     return {
       state,
       onLoad,
+      onSearch,
     };
   },
-  components: { List, Cell, Button },
+  components: { List, Cell, Button, Sticky, Search },
 });
 </script>
 
