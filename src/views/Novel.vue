@@ -88,6 +88,7 @@ export default defineComponent({
       state.queryParams.pageNo = 1;
       state.list = [];
       state.finished = false;
+      state.loading = true;
       onLoad();
     };
     return {
