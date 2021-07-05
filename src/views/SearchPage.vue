@@ -135,7 +135,10 @@ export default defineComponent({
     watch(
       () => route.query,
       () => {
-        if (queryParams.value.keywords) {
+        if (
+          queryParams.value.keywords &&
+          queryParams.value.keywords.length >= 2
+        ) {
           searchList({ ...route.query, ...queryParams.value }).then((res) => {
             state.list = res.data.vodrows;
             state.total = res.data.pageinfo.total;
